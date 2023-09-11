@@ -79,7 +79,7 @@ def upload_video():
 
 
 
-        filename.split()
+        filename.split('.')
 
         try:
            
