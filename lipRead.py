@@ -6,7 +6,7 @@ from typing import List
 import cv2
 from tensorflow.keras.models import Sequential 
 from tensorflow.keras.layers import Conv3D, LSTM, Dense, Dropout, Bidirectional, MaxPool3D, Activation, Reshape, SpatialDropout3D, BatchNormalization, TimeDistributed, Flatten
-
+import ffmpeg
 
 
 app = Flask(__name__)
@@ -77,9 +77,23 @@ def upload_video():
         #saving of video
         filename = secure_filename(uploaded_file.filename)
 
-        video_path = os.path.join('vidFolder', filename)
 
+
+        filename.split()
+
+        try:
+           
+           ffmpeg.input(filename).output(filename[0]+".mpg").run()
+           
+           print(f'Conversion completed: {filename[0]+".mpg"}')
+
+        except ffmpeg.Error as e:
+           print(f'Error during conversion: {e.stderr}')
+
+
+        video_path = os.path.join('vidFolder', filename[0]+".mpg")
         uploaded_file.save(video_path)
+
         # Process the video as needed
 
         vocab = [x for x in "abcdefghijklmnopqrstuvwxyz'?!123456789 "]
