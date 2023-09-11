@@ -79,20 +79,20 @@ def upload_video():
 
 
 
-        filename.split('.')
+        changeName=filename.split('.')
 
-        print("This is the filename",filename)
+       
         try:
            
-           ffmpeg.input(filename).output(filename+".mpg").run()
+           ffmpeg.input(filename).output(changeName[0]+".mpg").run()
            
-           print(f'Conversion completed: {filename+".mpg"}')
+           print(f'Conversion completed: {changeName[0]+".mpg"}')
 
         except ffmpeg.Error as e:
            print(f'Error during conversion: {e.stderr}')
 
 
-        video_path = os.path.join('vidFolder', filename+".mpg")
+        video_path = os.path.join('vidFolder', changeName[0]+".mpg")
         uploaded_file.save(video_path)
 
         # Process the video as needed
