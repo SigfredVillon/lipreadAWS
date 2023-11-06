@@ -181,16 +181,16 @@ def upload_video():
     if uploaded_file:
         padding_image_path = 'blank_frame.jpg'
 
-        #saving of video
-        video_path = os.path.join('vidFolder', changeName[0]+".mp4")
-        uploaded_file.save(video_path)
+
 
         filename = secure_filename(uploaded_file.filename)
         
 
         changeName=filename.split('.')
 
-
+        #saving of video
+        video_path = os.path.join('vidFolder', changeName[0]+".mp4")
+        uploaded_file.save(video_path)
 
        
         try:
