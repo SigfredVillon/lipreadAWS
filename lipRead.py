@@ -89,7 +89,7 @@ def load_data(path: str):
     file_name = path.split('/')[-1].split('.')[0]
     # File name splitting for windows
     #file_name = path.split('\\')[-1].split('.')[0]
-    video_path = os.path.join('vidFolder',f'{file_name}.mpg')
+    video_path = os.path.join('vidFolder',f'{file_name}.mp4')
     frames = load_video(video_path) 
 
     
@@ -173,22 +173,20 @@ def upload_video():
 
         changeName=filename.split('.')
 
+
+
+        video_path = os.path.join('vidFolder', changeName[0]+".mp4")
        
         try:
            
-           ffmpeg.input(filename).output(changeName[0]+".mp4",vf='scale=360:288', r=25).run(overwrite_output=True)
+           ffmpeg.input(filename).output(video_path,vf='scale=360:288', r=25).run(overwrite_output=True)
            
            print(f'Conversion completed: {changeName[0]+".mp4"}')
 
         except ffmpeg.Error as e:
            print(f'Error during conversion: {e.stderr}')
 
-       
-        
-        #saving of video
-        video_path = os.path.join('vidFolder', changeName[0]+".mp4")
-        uploaded_file.save(video_path)
-
+    
            
 
         
