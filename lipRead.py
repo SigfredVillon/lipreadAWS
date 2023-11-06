@@ -180,7 +180,7 @@ def upload_video():
        
         try:
            
-           ffmpeg.input(filename).output(video_path+"edited",vf='scale=360:288', r=25).run(overwrite_output=True)
+           ffmpeg.input(video_path).output("edited.mp4",vf='scale=360:288', r=25).run(overwrite_output=True)
            
            print(f'Conversion completed: {changeName[0]+".mp4"}')
 
