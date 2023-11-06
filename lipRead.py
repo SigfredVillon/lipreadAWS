@@ -45,10 +45,11 @@ def load_video(path:str) -> List[float]:
     #print(path)
     pwd = os.getcwd()
     hog_face_detector = dlib.get_frontal_face_detector()
-
+    
     dlib_facelandmark = dlib.shape_predictor(pwd + "/data/shape_predictor_68_face_landmarks.dat")
     cap = cv2.VideoCapture(path)
     frames = []
+    print(path)
     print("frames",int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
     
     for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))): 
