@@ -9,7 +9,6 @@ from tensorflow.keras.layers import Conv3D, LSTM, Dense, Dropout, Bidirectional,
 import ffmpeg
 import dlib
 
-
 app = Flask(__name__)
 
 
@@ -175,19 +174,23 @@ def upload_video():
         changeName=filename.split('.')
 
 
-
+        #saving of video
         video_path = os.path.join('vidFolder', changeName[0]+".mp4")
+        uploaded_file.save(video_path)
        
         try:
            
-           ffmpeg.input(filename).output(video_path,vf='scale=360:288', r=25).run(overwrite_output=True)
+           ffmpeg.input(filename).output(video_path+"edited",vf='scale=360:288', r=25).run(overwrite_output=True)
            
            print(f'Conversion completed: {changeName[0]+".mp4"}')
 
         except ffmpeg.Error as e:
            print(f'Error during conversion: {e.stderr}')
 
-    
+       
+        
+
+
            
 
         
