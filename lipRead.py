@@ -182,7 +182,7 @@ def upload_video():
        
         try:
            
-           ffmpeg.input(video_path).output(os.path.join('vidFolder', changeName[0]+".mp4"),vf='scale=360:288', r=25).run(overwrite_output=True)
+           ffmpeg.input(video_path).output(os.path.join('vidFolder', changeName[0]+"edit"+".mp4"),vf='scale=360:288', r=25).run(overwrite_output=True)
            
            print(f'Conversion completed: {changeName[0]+".mp4"}')
 
@@ -190,7 +190,7 @@ def upload_video():
            print(f'Error during conversion: {e.stderr}')
 
         output_video_path = os.path.join('vidFolder', changeName[0]+".mp4")
-        process_video(video_path, output_video_path, padding_image_path)
+        process_video(os.path.join('vidFolder', changeName[0]+"edit"+".mp4"), output_video_path, padding_image_path)
 
 
        
