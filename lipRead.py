@@ -168,9 +168,10 @@ def process_video(input_path, output_path):
 def upload_video():
     uploaded_file = request.files['video']
     if uploaded_file:
+        padding_image_path = 'blank_frame.jpg'
 
         filename = secure_filename(uploaded_file.filename)
-        output_video_path = os.path.join('vidFolder', 'edited.mp4')
+        
 
         changeName=filename.split('.')
 
@@ -181,12 +182,16 @@ def upload_video():
        
         try:
            
-           ffmpeg.input(video_path).output(os.path.join('vidFolder', 'edited.mp4'),vf='scale=360:288', r=25).run(overwrite_output=True)
+           ffmpeg.input(video_path).output(os.path.join('vidFolder', changeName[0]+".mp4"),vf='scale=360:288', r=25).run(overwrite_output=True)
            
            print(f'Conversion completed: {changeName[0]+".mp4"}')
 
         except ffmpeg.Error as e:
            print(f'Error during conversion: {e.stderr}')
+
+        output_video_path = os.path.join('vidFolder', changeName[0]+".mp4")
+        process_video(video_path, output_video_path, padding_image_path)
+
 
        
         
