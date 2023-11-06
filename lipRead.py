@@ -217,6 +217,7 @@ def upload_video():
         if(os.path.isfile(vidOne)):
 
         # Process the video as needed
+            print("VIDEO ONE IS ALIVE!")
 
             video= load_data(tf.convert_to_tensor(vidOne))
 
@@ -233,7 +234,7 @@ def upload_video():
         if(os.path.isfile(vidTwo)):
 
         # Process the video as needed
-
+            print("VIDEO TWO IS ALIVE!")
             video= load_data(tf.convert_to_tensor(vidTwo))
 
 
