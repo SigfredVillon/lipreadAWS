@@ -86,8 +86,11 @@ def load_video(path:str) -> List[float]:
     
 
 def load_data(path: str): 
-
-    video_path = os.path.join(path)
+    path = bytes.decode(path.numpy())
+    file_name = path.split('/')[-1].split('.')[0]
+    # File name splitting for windows
+    #file_name = path.split('\\')[-1].split('.')[0]
+    video_path = os.path.join('vidFolder',f'{file_name}.mp4')
     frames = load_video(video_path) 
 
     
@@ -198,13 +201,13 @@ def upload_video():
         except ffmpeg.Error as e:
            print(f'Error during conversion: {e.stderr}')
 
-        output_video_path = os.path.join('vidFolder', changeName[0]+".mp4")
-        process_video(os.path.join('vidFolder', changeName[0]+"edit"+".mp4"), output_video_path, padding_image_path)
+        output_video_path = os.path.join('vidFolder', changeName[0]+"split")
+        process_video(os.path.join('vidFolder', changeName[0]+"edit"+".mp4"), output_video_path , padding_image_path)
         
 
         combinedPrediction=""
-        vidOne = os.path.join('vidFolder', changeName[0]+".mp4_part1.mp4")
-        vidTwo = os.path.join('vidFolder', changeName[0]+".mp4_part2.mp4")
+        vidOne = os.path.join('vidFolder', changeName[0]+"split_part1.mp4")
+        vidTwo = os.path.join('vidFolder', changeName[0]+"split_part2.mp4")
 
 
         vocab = [x for x in "abcdefghijklmnopqrstuvwxyz'?!123456789 "]
