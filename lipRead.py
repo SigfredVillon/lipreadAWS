@@ -96,7 +96,7 @@ def load_data(path: str):
     return frames
 
 
-def process_video(input_path, output_path):
+def process_video(input_path, output_path, padding_image_path):
     try:
         # Open the input video
         cap = cv2.VideoCapture(input_path)
@@ -108,9 +108,23 @@ def process_video(input_path, output_path):
             # Get the total number of frames in the video
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
+            # Load the padding image
+            padding_frame = cv2.imread(padding_image_path)
+            
+            if padding_frame is None:
+                print(f"Error: Failed to load the padding image from {padding_image_path}")
+                return
+            
+            # Check if the padding image dimensions match the video frame dimensions
+            frame_width = int(cap.get(3))
+            frame_height = int(cap.get(4))
+            if padding_frame.shape[0] != frame_height or padding_frame.shape[1] != frame_width:
+                print("Error: Padding image dimensions do not match video frame dimensions.")
+                return
+
             if total_frames == desired_frame_count:
                 # If the video already has exactly 75 frames, just save it
-                out = cv2.VideoWriter(output_path + "_part1.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (int(cap.get(3)), int(cap.get(4))))
+                out = cv2.VideoWriter(output_path + "_part1.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (frame_width, frame_height))
                 for i in range(total_frames):
                     success, frame = cap.read()
                     if success:
@@ -119,13 +133,12 @@ def process_video(input_path, output_path):
                 print(f"Saved exactly {desired_frame_count} frames to {output_path}_part1.mp4")
             elif total_frames < desired_frame_count:
                 # If the video has less than 75 frames, add padding to reach 75 frames and save it
-                out = cv2.VideoWriter(output_path + "_part1.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (int(cap.get(3)), int(cap.get(4))))
+                out = cv2.VideoWriter(output_path + "_part1.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (frame_width, frame_height))
                 for i in range(total_frames):
                     success, frame = cap.read()
                     if success:
                         out.write(frame)
 
-                padding_frame = np.zeros((int(cap.get(4)), int(cap.get(3)), 3), dtype=np.uint8)
                 for i in range(desired_frame_count - total_frames):
                     out.write(padding_frame)
 
@@ -133,7 +146,7 @@ def process_video(input_path, output_path):
                 print(f"Added padding to reach {desired_frame_count} frames and saved to {output_path}_part1.mp4")
             else:
                 # If the video has more than 75 frames, save the first 75 frames as part 1
-                out = cv2.VideoWriter(output_path + "_part1.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (int(cap.get(3)), int(cap.get(4))))
+                out = cv2.VideoWriter(output_path + "_part1.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (frame_width, frame_height))
                 for i in range(desired_frame_count):
                     success, frame = cap.read()
                     if success:
@@ -142,15 +155,13 @@ def process_video(input_path, output_path):
                 print(f"Saved the first {desired_frame_count} frames to {output_path}_part1.mp4")
 
                 # Create the second part
-                out = cv2.VideoWriter(output_path + "_part2.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (int(cap.get(3)), int(cap.get(4))))
+                out = cv2.VideoWriter(output_path + "_part2.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (frame_width, frame_height))
                 for i in range(min(desired_frame_count, total_frames - desired_frame_count)):
                     success, frame = cap.read()
                     if success:
                         out.write(frame)
 
-                # Add padding frames to reach 75 frames for the second part if needed
                 for i in range(desired_frame_count - (total_frames - desired_frame_count)):
-                    padding_frame = np.zeros((int(cap.get(4)), int(cap.get(3)), 3), dtype=np.uint8)
                     out.write(padding_frame)
 
                 out.release()
@@ -183,8 +194,6 @@ def upload_video():
         try:
            
            ffmpeg.input(video_path).output(os.path.join('vidFolder', changeName[0]+"edit"+".mp4"),vf='scale=360:288', r=25).run(overwrite_output=True)
-           
-           print(f'Conversion completed: {changeName[0]+".mp4"}')
 
         except ffmpeg.Error as e:
            print(f'Error during conversion: {e.stderr}')
