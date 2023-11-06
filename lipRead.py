@@ -49,7 +49,7 @@ def load_video(path:str) -> List[float]:
     dlib_facelandmark = dlib.shape_predictor(pwd + "/data/shape_predictor_68_face_landmarks.dat")
     cap = cv2.VideoCapture(path)
     frames = []
-
+    print("frames",int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
     
     for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))): 
         ret, frame = cap.read()
@@ -181,15 +181,17 @@ def upload_video():
     if uploaded_file:
         padding_image_path = 'blank_frame.jpg'
 
+        #saving of video
+        video_path = os.path.join('vidFolder', changeName[0]+".mp4")
+        uploaded_file.save(video_path)
+
         filename = secure_filename(uploaded_file.filename)
         
 
         changeName=filename.split('.')
 
 
-        #saving of video
-        video_path = os.path.join('vidFolder', changeName[0]+".mp4")
-        uploaded_file.save(video_path)
+
        
         try:
            
