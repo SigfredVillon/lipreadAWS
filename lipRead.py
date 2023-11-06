@@ -8,6 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv3D, LSTM, Dense, Dropout, Bidirectional, MaxPool3D, Activation, Reshape, SpatialDropout3D, BatchNormalization, TimeDistributed, Flatten
 import ffmpeg
 import dlib
+import numpy as np
 
 app = Flask(__name__)
 
@@ -41,45 +42,43 @@ def load_model() -> Sequential:
 
     return model
 
-def load_video(path:str) -> List[float]: 
-    #print(path)
+def load_video(path: str) -> List[float]:
     pwd = os.getcwd()
     hog_face_detector = dlib.get_frontal_face_detector()
-    
     dlib_facelandmark = dlib.shape_predictor(pwd + "/data/shape_predictor_68_face_landmarks.dat")
     cap = cv2.VideoCapture(path)
     frames = []
     print(path)
-    print("frames",int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
-    
-    for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))): 
+    print("frames", int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
+
+    for _ in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
         ret, frame = cap.read()
-        
+
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = hog_face_detector(frame)
 
-        #plt.imshow(gray2)
-        face=faces[0]
-        face_landmarks = dlib_facelandmark(gray, face)
-                  
-        # cv2.imshow('frames',frame)
-        # start_point = ((face_landmarks.part(52).x) - 70, face_landmarks.part(52).y - 10)
-        # end_point = ((face_landmarks.part(52).x) + 69, face_landmarks.part(52).y + 35)
+        if faces:
+            # Use the detected face frame
+            face = faces[0]
+            face_landmarks = dlib_facelandmark(gray, face)
 
-        ytop=(face_landmarks.part(52).y)-10
-        ybottom=(face_landmarks.part(52).y)+36
-        xtop=(face_landmarks.part(52).x)-70
-        xbottom=(face_landmarks.part(52).x)+70
+            ytop = (face_landmarks.part(52).y) - 10
+            ybottom = (face_landmarks.part(52).y) + 36
+            xtop = (face_landmarks.part(52).x) - 70
+            xbottom = (face_landmarks.part(52).x) + 70
 
-        # print(f'frame[{ytop}:{ybottom},{xtop}:{xbottom},:]')
+            frame = frame[ytop:ybottom, xtop:xbottom, :]
+        else:
+            # Use the blank frame when no face is detected
+            frame = np.zeros_like(frame, dtype=np.uint8)
+
         frame = tf.image.rgb_to_grayscale(frame)
-        frames.append(frame[ytop:ybottom,xtop:xbottom,:])
+        frames.append(frame)
+
     cap.release()
-    
+
     mean = tf.math.reduce_mean(frames)
     std = tf.math.reduce_std(tf.cast(frames, tf.float32))
-    # print(f'mean:{mean}, std:{std}')
-    # print(f'frame-shape: {frames[0].shape}')
     cast = tf.cast((frames - mean), tf.float32) / std
     print(f'cast: {cast.shape}')
     return cast
