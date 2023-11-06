@@ -70,7 +70,8 @@ def load_video(path: str) -> List[float]:
             frame = frame[ytop:ybottom, xtop:xbottom, :]
         else:
             # Use the blank frame when no face is detected
-            frame = np.zeros_like(frame, dtype=np.uint8)
+            frame = np.zeros((46, 140, 1), dtype=np.uint8)
+
 
         frame = tf.image.rgb_to_grayscale(frame)
         frames.append(frame)
