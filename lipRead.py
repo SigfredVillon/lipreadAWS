@@ -86,11 +86,8 @@ def load_video(path:str) -> List[float]:
     
 
 def load_data(path: str): 
-    path = bytes.decode(path.numpy())
-    file_name = path.split('/')[-1].split('.')[0]
-    # File name splitting for windows
-    #file_name = path.split('\\')[-1].split('.')[0]
-    video_path = os.path.join('vidFolder',f'{file_name}.mp4')
+
+    video_path = os.path.join(path)
     frames = load_video(video_path) 
 
     
