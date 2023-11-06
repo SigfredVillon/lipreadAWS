@@ -80,7 +80,7 @@ def load_video(path:str) -> List[float]:
     # print(f'mean:{mean}, std:{std}')
     # print(f'frame-shape: {frames[0].shape}')
     cast = tf.cast((frames - mean), tf.float32) / std
-    # print(f'cast: {cast.shape}')
+    print(f'cast: {cast.shape}')
     return cast
     
 
@@ -213,7 +213,7 @@ def upload_video():
         num_to_char = tf.keras.layers.StringLookup(
         vocabulary=char_to_num.get_vocabulary(), oov_token="", invert=True)
 
-
+        model = load_model()
         if(os.path.isfile(vidOne)):
 
         # Process the video as needed
@@ -221,8 +221,6 @@ def upload_video():
 
             video= load_data(tf.convert_to_tensor(vidOne))
 
-
-            model = load_model()
             yhat = model.predict(tf.expand_dims(video, axis=0))
             decoder = tf.keras.backend.ctc_decode(yhat, [75], greedy=True)[0][0].numpy()
 
