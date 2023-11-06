@@ -200,17 +200,12 @@ def upload_video():
 
         output_video_path = os.path.join('vidFolder', changeName[0]+".mp4")
         process_video(os.path.join('vidFolder', changeName[0]+"edit"+".mp4"), output_video_path, padding_image_path)
-
-
-       
         
 
+        combinedPrediction=""
+        vidOne = os.path.join('vidFolder', changeName[0]+".mp4_part1.mp4")
+        vidTwo = os.path.join('vidFolder', changeName[0]+".mp4_part2.mp4")
 
-           
-
-        
-
-        # Process the video as needed
 
         vocab = [x for x in "abcdefghijklmnopqrstuvwxyz'?!123456789 "]
         char_to_num = tf.keras.layers.StringLookup(vocabulary=vocab, oov_token="")
@@ -219,19 +214,42 @@ def upload_video():
         vocabulary=char_to_num.get_vocabulary(), oov_token="", invert=True)
 
 
-        video= load_data(tf.convert_to_tensor(video_path))
+        if(os.path.isfile(vidOne)):
+
+        # Process the video as needed
+
+            video= load_data(tf.convert_to_tensor(vidOne))
 
 
-        model = load_model()
-        yhat = model.predict(tf.expand_dims(video, axis=0))
-        decoder = tf.keras.backend.ctc_decode(yhat, [75], greedy=True)[0][0].numpy()
+            model = load_model()
+            yhat = model.predict(tf.expand_dims(video, axis=0))
+            decoder = tf.keras.backend.ctc_decode(yhat, [75], greedy=True)[0][0].numpy()
 
 
         # Convert prediction to text
-        converted_prediction = tf.strings.reduce_join(num_to_char(decoder)).numpy().decode('utf-8')
+            converted_prediction = tf.strings.reduce_join(num_to_char(decoder)).numpy().decode('utf-8')
+            combinedPrediction = combinedPrediction + " " + converted_prediction
+
+        if(os.path.isfile(vidTwo)):
+
+        # Process the video as needed
+
+            video= load_data(tf.convert_to_tensor(vidTwo))
 
 
-        return jsonify({'Prediction': converted_prediction})
+            model = load_model()
+            yhat = model.predict(tf.expand_dims(video, axis=0))
+            decoder = tf.keras.backend.ctc_decode(yhat, [75], greedy=True)[0][0].numpy()
+
+
+        # Convert prediction to text
+            converted_prediction = tf.strings.reduce_join(num_to_char(decoder)).numpy().decode('utf-8')
+            combinedPrediction = combinedPrediction + " " + converted_prediction
+        
+  
+          
+
+        return jsonify({'Prediction': combinedPrediction})
     
     return jsonify({'error': 'No file uploaded'})
 
